@@ -1,0 +1,34 @@
+# Development PostgreSQL for the backend.
+# Works with both Docker Compose and Podman:
+#   docker compose up -d
+#   podman-compose up -d        (or: podman compose up -d)
+#
+# It reads the same DB_* variables the NestJS app uses, from backend/.env
+# (copy .env.example to .env first).
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      POSTGRES_DB: ${DB_NAME:-messaging}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Schema and seed data, applied only when the volume is first created.
+      # `Z` relabels the file for SELinux, which rootless Podman needs.
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro,Z
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-messaging}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

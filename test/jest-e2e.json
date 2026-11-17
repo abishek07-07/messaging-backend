@@ -1,0 +1,30 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "moduleNameMapper": {
+    "^@nestjs/swagger$": "<rootDir>/stubs/nestjs-swagger.ts",
+    "^@src/(.*)$": "<rootDir>/../src/$1",
+    "^@core/(.*)$": "<rootDir>/../src/core/$1",
+    "^@features/(.*)$": "<rootDir>/../src/features/$1",
+    "^@utils/(.*)$": "<rootDir>/../src/utils/$1",
+    "^@config/(.*)$": "<rootDir>/../config/$1"
+  },
+  "transform": {
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "allowJs": true,
+          "module": "commonjs",
+          "moduleResolution": "node",
+          "resolvePackageJsonExports": false
+        }
+      }
+    ]
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!.*(@nestjs/config|@nestjs/swagger|@nestjs/jwt|@nestjs/passport|bcryptjs))"
+  ]
+}
